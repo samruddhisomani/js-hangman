@@ -24,6 +24,7 @@ function Hangman(words, fullGuesses) {
         {
             const para = document.createElement("p")
             para.innerHTML = letter;
+            para.setAttribute('class', 'lettersGuessed__element')
             document.querySelector('.container__lettersGuessed').append(para);
         }
     }

@@ -22,4 +22,7 @@
     text-transform: uppercase;
 }
 
-.lettersGuessed {}
+.lettersGuessed__element {
+    margin: 1em;
+    text-transform: uppercase;
+}
