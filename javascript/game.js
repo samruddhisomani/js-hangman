@@ -7,13 +7,27 @@ function Hangman(words, fullGuesses) {
     this.words = words;
     this.fullGuesses = fullGuesses;
     this.guessesRemaining = fullGuesses;
+    this.wins = 0;
+    this.gamesPlayed = 0;
 
     //methods
+
+    //helper method to adjust wins
+    this.updateWins = (wins, gamesPlayed) => {
+        this.wins += wins;
+        this.gamesPlayed += gamesPlayed;
+
+        const winString = `${this.gamesPlayed} games played. ${this.wins} games won.`
+
+        document.querySelector(".container__wins").textContent = winString
+    }
+
     //helper method to update remaining guesses
     this.updateGuessesRemaining = () => {
         document.querySelector('.container__guessesRemaining').innerHTML = `Guesses Remaining: ${this.guessesRemaining}`
 
         if (this.guessesRemaining === 0) {
+            this.updateWins(0, 1);
             alert('Game Over. You Lost. New game started.');
             this.startNewGame();
         }
@@ -34,6 +48,9 @@ function Hangman(words, fullGuesses) {
         //full guesses every time a new game is started
         this.guessesRemaining = this.fullGuesses;
         this.updateGuessesRemaining();
+
+        //update to 0 games played and 0 games won
+        this.updateWins(0, 0);
 
         //choose a random word and initialize attendant elements
         //as appropriate
@@ -60,7 +77,7 @@ function Hangman(words, fullGuesses) {
             const para = document.createElement("p")
             para.setAttribute('class', 'container__slotsElement')
             para.innerHTML = "_"
-            const slot = document.querySelector('.container__slots').appendChild(para)
+            document.querySelector('.container__slots').appendChild(para)
         });
     }
 
@@ -98,6 +115,7 @@ function Hangman(words, fullGuesses) {
 
             // if you've guessed all the letters you won the game.
             if (this.lettersRemaining === 0) {
+                this.updateWins(1, 1);
                 alert("Game over. You won! New game started.");
                 this.startNewGame();
             }
