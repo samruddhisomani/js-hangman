@@ -1,122 +1,119 @@
-let guessesRemaining;
-let randomWord, letters, lettersRemaining, guessedLetters;
-
-//so if I want to, I can reformat what this part looks like in one place
-const updateGuessesRemaining = () => {
-    document.querySelector('.container__guessesRemaining').innerHTML = `Guesses Remaining: ${guessesRemaining}`
-
-    if (guessesRemaining === 0) {
-        alert('Game Over. You Lost. New game started.');
-        ({ randomWord, letters, lettersRemaining, guessedLetters } = startNewGame(words));
-    }
-}
-
-//and this one
-const updateLettersGuessed = (letter) => {
-    {
-        const para = document.createElement("p")
-        para.innerHTML = letter;
-        document.querySelector('.container__lettersGuessed').append(para);
-    }
-}
 //the first piece I need is an array of words.
-const words = ['otter', 'hippo', 'whale', 'dolphin', 'dugong', 'porpoise', 'platypus', 'walrus'];
+const words = ['otter', 'hippo', 'whale', 'dolphin', 'dugong', 'porpoise', 'platypus', 'walrus', 'sealion', 'seal'];
 
-//I need to randomly select a word from that list
-//I need to create a string of underscores as long as my random word
-//but I need to make it to where it replaces correctly guessed letters
-//I need this whole process to be repeatable
+function Hangman(words, fullGuesses) {
 
-const startNewGame = (words) => {
-    //I recognize up to 11 guesses before a player loses.
-    guessesRemaining = 11;
-    updateGuessesRemaining();
+    //properties
+    this.words = words;
+    this.fullGuesses = fullGuesses;
+    this.guessesRemaining = fullGuesses;
 
-    const randomWord = words[Math.floor(Math.random() * words.length)];
-    const letters = randomWord.split("");
-    const lettersRemaining = letters.length;
+    //methods
+    //helper method to update remaining guesses
+    this.updateGuessesRemaining = () => {
+        document.querySelector('.container__guessesRemaining').innerHTML = `Guesses Remaining: ${this.guessesRemaining}`
 
-    const containerSlots = document.querySelector('.container__slots');
-    const containerLettersGuessed = document.querySelector('.container__lettersGuessed');
-
-    //remove any already existing slots
-    while (containerSlots.lastChild) {
-        containerSlots.removeChild(containerSlots.lastChild)
+        if (this.guessesRemaining === 0) {
+            alert('Game Over. You Lost. New game started.');
+            this.startNewGame();
+        }
     }
 
-    while (containerLettersGuessed.lastChild) {
-        containerLettersGuessed.removeChild(containerLettersGuessed.lastChild)
+    //helper method to update letters guessed.
+    this.updateLettersGuessed = (letter) => {
+        {
+            const para = document.createElement("p")
+            para.innerHTML = letter;
+            document.querySelector('.container__lettersGuessed').append(para);
+        }
     }
 
-    //I need to make as many blanks as I have letters
-    letters.map(letter => {
-        const para = document.createElement("p")
-        para.setAttribute('class', 'container__slotsElement')
-        para.innerHTML = "_"
-        const slot = document.querySelector('.container__slots').appendChild(para)
-    });
+    this.startNewGame = () => {
+        //initialize guessesremaining to
+        //full guesses every time a new game is started
+        this.guessesRemaining = this.fullGuesses;
+        this.updateGuessesRemaining();
 
-    let newWord = {
-        "randomWord": randomWord,
-        "letters": letters,
-        "lettersRemaining": lettersRemaining,
-        "guessedLetters": [],
-    }
+        //choose a random word and initialize attendant elements
+        //as appropriate
+        this.randomWord = this.words[Math.floor(Math.random() * words.length)];
+        this.letters = this.randomWord.split("");
+        this.lettersRemaining = this.letters.length;
+        this.guessedLetters = [];
 
-    console.log(randomWord);
-    return newWord
-};
+        const containerSlots = document.querySelector('.container__slots');
+        const containerLettersGuessed = document.querySelector('.container__lettersGuessed');
 
-({ randomWord, letters, lettersRemaining, guessedLetters } = startNewGame(words));
-
-console.log(randomWord);
-console.log(guessedLetters);
-
-//on keypress I need to do stuff
-const processGuess = event => {
-    const guess = event.key;
-    console.log(guessedLetters);
-
-    if (!guess.match('^[a-z]$')) {
-        //handling unexpected inputs
-        alert('Not a letter');
-    } else if (guessedLetters.includes(guess)) {
-        //handling unexpected inputs
-        alert('You already guessed that letter!')
-    } else if (!letters.includes(guess)) {
-        //handling wrong guesses
-        guessesRemaining--;
-        updateLettersGuessed(guess);
-        updateGuessesRemaining();
-        guessedLetters.push(guess);
-
-    } else if (letters.includes(guess)) {
-
-        updateLettersGuessed(guess);
-        guessedLetters.push(guess);
-
-        //handling correct guesses
-        [...document.querySelectorAll('.container__slotsElement')].map((x, i) => {
-            if (letters[i] == guess) {
-                x.innerHTML = guess;
-                lettersRemaining--;
-            }
-        })
-
-        if (lettersRemaining === 0) {
-            alert("Game over. You won! New game started.");
-            ({ randomWord, letters, lettersRemaining, guessedLetters } = startNewGame(words));
+        //remove any already existing slots
+        while (containerSlots.lastChild) {
+            containerSlots.removeChild(containerSlots.lastChild)
         }
 
-    } else {
-        throw ('System Error')
+        //remove all the letters we recognize as already guessed
+        while (containerLettersGuessed.lastChild) {
+            containerLettersGuessed.removeChild(containerLettersGuessed.lastChild)
+        }
+
+        //I need to make as many blanks as I have letters
+        this.letters.map(letter => {
+            const para = document.createElement("p")
+            para.setAttribute('class', 'container__slotsElement')
+            para.innerHTML = "_"
+            const slot = document.querySelector('.container__slots').appendChild(para)
+        });
     }
 
-    console.log(guessedLetters);
+    //on keypress I need to do stuff
+    this.processGuess = event => {
+        const guess = event.key;
+
+        if (!guess.match('^[a-z]$')) {
+            //handling unexpected inputs--not letters
+            alert('Not a letter');
+        } else if (this.guessedLetters.includes(guess)) {
+            //handling unexpected inputs--already guessed
+            alert('You already guessed that letter!')
+        } else if (!this.letters.includes(guess)) {
+            //handling wrong guesses
+            //mostly housekeeping
+            this.guessesRemaining--;
+            this.updateLettersGuessed(guess);
+            this.updateGuessesRemaining();
+            this.guessedLetters.push(guess);
+
+        } else if (this.letters.includes(guess)) {
+
+            //housekeeping
+            this.updateLettersGuessed(guess);
+            this.guessedLetters.push(guess);
+
+            //handling correct guesses
+            [...document.querySelectorAll('.container__slotsElement')].map((x, i) => {
+                if (this.letters[i] == guess) {
+                    x.innerHTML = guess;
+                    this.lettersRemaining--;
+                }
+            })
+
+            // if you've guessed all the letters you won the game.
+            if (this.lettersRemaining === 0) {
+                alert("Game over. You won! New game started.");
+                this.startNewGame();
+            }
+
+        } else {
+            throw ('System Error')
+        }
+    }
+
+    //initialize new game
+    this.startNewGame();
 }
+
+var hangman = new Hangman(words, 11);
 
 //on keypress I need to read user input
 //keypress means I won't pick up system commands,
 //only alphanumeric
-document.body.onkeypress = event => processGuess(event);
+document.body.onkeypress = event => hangman.processGuess(event);
 
