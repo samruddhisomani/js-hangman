@@ -1,4 +1,5 @@
 let guessesRemaining;
+let randomWord, letters, lettersRemaining, guessedLetters;
 
 //so if I want to, I can reformat what this part looks like in one place
 const updateGuessesRemaining = () => {
@@ -6,7 +7,7 @@ const updateGuessesRemaining = () => {
 
     if (guessesRemaining === 0) {
         alert('Game Over. You Lost. New game started.');
-        startNewGame(words);
+        ({ randomWord, letters, lettersRemaining, guessedLetters } = startNewGame(words));
     }
 }
 
@@ -19,7 +20,7 @@ const updateLettersGuessed = (letter) => {
     }
 }
 //the first piece I need is an array of words.
-const words = ['otter', 'hippo', 'whale', 'dolphin', 'dugong', 'porpoise', 'platypus'];
+const words = ['otter', 'hippo', 'whale', 'dolphin', 'dugong', 'porpoise', 'platypus', 'walrus'];
 
 //I need to randomly select a word from that list
 //I need to create a string of underscores as long as my random word
@@ -33,7 +34,6 @@ const startNewGame = (words) => {
 
     const randomWord = words[Math.floor(Math.random() * words.length)];
     const letters = randomWord.split("");
-    const guesses = Array(letters.length).fill("_");
     const lettersRemaining = letters.length;
 
     const containerSlots = document.querySelector('.container__slots');
@@ -59,32 +59,41 @@ const startNewGame = (words) => {
     let newWord = {
         "randomWord": randomWord,
         "letters": letters,
-        "guesses": guesses,
         "lettersRemaining": lettersRemaining,
+        "guessedLetters": [],
     }
 
+    console.log(randomWord);
     return newWord
-}
+};
 
-let { randomWord, letters, guesses, lettersRemaining } = startNewGame(words);
+({ randomWord, letters, lettersRemaining, guessedLetters } = startNewGame(words));
+
+console.log(randomWord);
+console.log(guessedLetters);
 
 //on keypress I need to do stuff
 const processGuess = event => {
     const guess = event.key;
+    console.log(guessedLetters);
 
     if (!guess.match('^[a-z]$')) {
         //handling unexpected inputs
         alert('Not a letter');
-
+    } else if (guessedLetters.includes(guess)) {
+        //handling unexpected inputs
+        alert('You already guessed that letter!')
     } else if (!letters.includes(guess)) {
         //handling wrong guesses
         guessesRemaining--;
         updateLettersGuessed(guess);
         updateGuessesRemaining();
+        guessedLetters.push(guess);
 
     } else if (letters.includes(guess)) {
 
         updateLettersGuessed(guess);
+        guessedLetters.push(guess);
 
         //handling correct guesses
         [...document.querySelectorAll('.container__slotsElement')].map((x, i) => {
@@ -96,13 +105,14 @@ const processGuess = event => {
 
         if (lettersRemaining === 0) {
             alert("Game over. You won! New game started.");
-            startNewGame(words);
+            ({ randomWord, letters, lettersRemaining, guessedLetters } = startNewGame(words));
         }
 
     } else {
         throw ('System Error')
     }
 
+    console.log(guessedLetters);
 }
 
 //on keypress I need to read user input
