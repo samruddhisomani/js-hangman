@@ -133,8 +133,6 @@ function Hangman(words, fullGuesses) {
 
 var hangman = new Hangman(words, 11);
 
-//on keypress I need to read user input
-//keypress means I won't pick up system commands,
-//only alphanumeric
-document.body.onkeypress = event => hangman.processGuess(event);
+//on keyup I need to read user input
+document.body.onkeyup = event => hangman.processGuess(event);
 
