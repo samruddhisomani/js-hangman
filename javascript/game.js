@@ -17,7 +17,7 @@ function Hangman(words, fullGuesses) {
         this.wins += wins;
         this.gamesPlayed += gamesPlayed;
 
-        const winString = `${this.gamesPlayed} games played. ${this.wins} games won.`
+        const winString = `${this.gamesPlayed} game(s) won of ${this.wins} played.`
 
         document.querySelector(".container__wins").textContent = winString
     }
@@ -71,6 +71,8 @@ function Hangman(words, fullGuesses) {
         while (containerLettersGuessed.lastChild) {
             containerLettersGuessed.removeChild(containerLettersGuessed.lastChild)
         }
+
+        //add letters guessed wording back in
 
         //I need to make as many blanks as I have letters
         this.letters.map(letter => {
