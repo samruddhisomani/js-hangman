@@ -27,7 +27,7 @@ function Hangman(words, fullGuesses) {
         document.querySelector('.container__guessesRemaining').innerHTML = `Guesses Remaining: ${this.guessesRemaining}`
 
         if (this.guessesRemaining === 0) {
-            this.updateWins(0, 1);
+            this.updateWins(1, 0);
             alert('Game Over. You Lost. New game started.');
             this.startNewGame();
         }
